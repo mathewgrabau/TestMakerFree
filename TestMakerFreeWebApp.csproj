@@ -20,6 +20,16 @@
     <Content Remove="ClientApp\**" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="ClientApp\app\components\app\interfaces\quiz.ts" />
+    <None Remove="ClientApp\app\components\quiz\quiz-list.component.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\app\components\app\interfaces\quiz.ts" />
+    <TypeScriptCompile Include="ClientApp\app\components\quiz\quiz-list.component.ts" />
+  </ItemGroup>
+
   <Target Name="DebugRunWebpack" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('wwwroot\dist') ">
     <!-- Ensure Node.js is installed -->
     <Exec Command="node --version" ContinueOnError="true">

@@ -14,8 +14,26 @@ namespace TestMakerFreeWebApp.Controllers
     [Route("api/[controller]")]
     public class QuizController : Controller
     {
+        // GET api/<controller>/5
+        [HttpGet("{id}")]
+        public IActionResult Get(int id)
+        {
+            // For now create a sample object
+            var viewModel = new QuizViewModel
+            {
+                Id = id,
+                Title = $"Sample quiz, id {id}",
+                Description = "Generated quiz for demonstration",
+                CreatedDate = DateTime.Now,
+                LastModifiedDate = DateTime.Now
+            };
+
+            return new JsonResult(viewModel, new JsonSerializerSettings { Formatting = Formatting.Indented });
+        }
+
+
         // GET: api/quiz/latest
-        [HttpGet("Latest/{num}")]
+        [HttpGet("Latest/{num:int?}")]
         public IActionResult Latest(int num = 10)
         {
             var sampleQuizzes = new List<QuizViewModel>();
@@ -86,13 +104,7 @@ namespace TestMakerFreeWebApp.Controllers
             return new string[] { "value1", "value2" };
         }
 
-        //// GET api/<controller>/5
-        //[HttpGet("{id}")]
-        //public string Get(int id)
-        //{
-        //    return "value";
-        //}
-
+        
         // POST api/<controller>
         [HttpPost]
         public void Post([FromBody]string value)
