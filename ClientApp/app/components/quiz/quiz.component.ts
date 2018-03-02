@@ -1,4 +1,4 @@
-﻿import { Component, Input } from '@angular/core';
+﻿import { Component, Input, Inject, OnInit } from '@angular/core';
 
 @Component({
     selector: "quiz",
