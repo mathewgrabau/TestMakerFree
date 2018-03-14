@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -52,6 +53,25 @@ namespace TestMakerFreeWebApp.Data.Models
         [Required]
         public DateTime LastModifiedDate { get; set; }
 
+        #endregion
+
+        #region Lazy-Load Properties
+
+        /// <summary>
+        /// The quiz author
+        /// </summary>
+        [ForeignKey("UserId")]
+        public virtual ApplicationUser User { get; set; }
+
+        /// <summary>
+        /// List containing all of the questions related (associated) to this quiz.
+        /// </summary>
+        public virtual List<Question> Questions { get; set; }
+
+        /// <summary>
+        /// List containing all of the results for this quiz.
+        /// </summary>
+        public virtual List<Result> Results { get; set; }
         #endregion
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -45,6 +46,16 @@ namespace TestMakerFreeWebApp.Data.Models
         [Required]
         public DateTime LastModifiedDate { get; set; }
 
+        #endregion
+
+        #region Lazy-Load Properties
+
+        /// <summary>
+        /// Parent question for the answer.
+        /// </summary>
+        [ForeignKey("QuestionId")]
+        public virtual Question Question{ get; set; }
+        
         #endregion
     }
 }

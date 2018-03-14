@@ -45,5 +45,12 @@ namespace TestMakerFreeWebApp.Data.Models
         public DateTime LastModifiedDate { get; set; }
 
         #endregion
+
+        #region Lazy-Load Properties
+        /// <summary>
+        /// A list of all the quizzes created by the user.
+        /// </summary>
+        public virtual List<Quiz> Quizzes { get; set; }
+        #endregion
     }
 }
