@@ -12,7 +12,7 @@ namespace TestMakerFreeWebApp.Data.Models
     {
         #region Constructor
 
-        public ApplicationUser()
+        public Quiz()
         {
             
         }
