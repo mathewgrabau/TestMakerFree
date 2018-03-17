@@ -28,9 +28,6 @@ namespace TestMakerFreeWebApp.Data.Models
 
         public string Description { get; set; }
 
-        [Required]
-        public string Email { get; set; }
-
         public string Text { get; set; }
 
         public string Notes { get; set; }

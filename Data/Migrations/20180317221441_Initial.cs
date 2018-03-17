@@ -36,7 +36,6 @@ namespace TestMakerFreeWebApp.Data.Migrations
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     CreatedDate = table.Column<DateTime>(nullable: false),
                     Description = table.Column<string>(nullable: true),
-                    Email = table.Column<string>(nullable: false),
                     Flags = table.Column<int>(nullable: false),
                     LastModifiedDate = table.Column<DateTime>(nullable: false),
                     Notes = table.Column<string>(nullable: true),

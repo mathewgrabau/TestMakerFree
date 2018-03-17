@@ -11,7 +11,7 @@ using TestMakerFreeWebApp.Data;
 namespace TestMakerFreeWebApp.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20180316030137_Initial")]
+    [Migration("20180317221441_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -114,9 +114,6 @@ namespace TestMakerFreeWebApp.Data.Migrations
                     b.Property<DateTime>("CreatedDate");
 
                     b.Property<string>("Description");
-
-                    b.Property<string>("Email")
-                        .IsRequired();
 
                     b.Property<int>("Flags");
 

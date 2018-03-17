@@ -114,9 +114,6 @@ namespace TestMakerFreeWebApp.Data.Migrations
 
                     b.Property<string>("Description");
 
-                    b.Property<string>("Email")
-                        .IsRequired();
-
                     b.Property<int>("Flags");
 
                     b.Property<DateTime>("LastModifiedDate");
