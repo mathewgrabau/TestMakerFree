@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Newtonsoft.Json;
+using TestMakerFreeWebApp.Data;
 using TestMakerFreeWebApp.ViewModels;
+using Mapster;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -14,55 +16,65 @@ namespace TestMakerFreeWebApp.Controllers
     [Route("api/[controller]")]
     public class QuizController : Controller
     {
+        private ApplicationDbContext _context;
+
+        #region Constructor
+
+        public QuizController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
+        #endregion
+
+        #region RESTful conventions methods
+
         // GET api/<controller>/5
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            // For now create a sample object
-            var viewModel = new QuizViewModel
-            {
-                Id = id,
-                Title = $"Sample quiz, id {id}",
-                Description = "Generated quiz for demonstration",
-                CreatedDate = DateTime.Now,
-                LastModifiedDate = DateTime.Now
-            };
+            var quiz = _context.Quizzes.Where(q => q.Id == id).FirstOrDefault();
 
-            return new JsonResult(viewModel, new JsonSerializerSettings { Formatting = Formatting.Indented });
+            return new JsonResult(quiz.Adapt<QuizViewModel>(),
+                new JsonSerializerSettings {Formatting = Formatting.Indented});
         }
 
+        // POST api/<controller>
+        [HttpPost]
+        public void Post([FromBody]string value)
+        {
+            throw new NotImplementedException();
+        }
+
+        // PUT api/<controller>/5
+        [HttpPut("{id}")]
+        public void Put(int id, [FromBody]string value)
+        {
+            throw new NotImplementedException();
+        }
+
+        // DELETE api/<controller>/5
+        [HttpDelete("{id}")]
+        public void Delete(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region Attribute-based routing methods
 
         // GET: api/quiz/latest
         [HttpGet("Latest/{num:int?}")]
         public IActionResult Latest(int num = 10)
         {
-            var sampleQuizzes = new List<QuizViewModel>();
-
-            sampleQuizzes.Add(new QuizViewModel
-            {
-                Id = 1,
-                Title = "Which Shingeki No Kyojin character are you?",
-                Description = "Anime-related personality test",
-                CreatedDate =  DateTime.Now,
-                LastModifiedDate = DateTime.Now
-            });
-
-            // add some additional quizzes
-            for (var i = 2; i <= num; ++i)
-            {
-                sampleQuizzes.Add(new QuizViewModel
-                {
-                    Id = i,
-                    Title = $"Sample Quiz {i}",
-                    Description = "This is a sample quiz",
-                    CreatedDate = DateTime.Now,
-                    LastModifiedDate = DateTime.Now
-                });
-            }
+            var latest = _context.Quizzes.OrderByDescending(q => q.CreatedDate)
+                .Take(num)
+                .ToArray();
 
             // output the result in JSON format
             return new JsonResult(
-                sampleQuizzes,
+                latest.Adapt<QuizViewModel[]>(),
                 new JsonSerializerSettings {Formatting = Formatting.Indented}
             );
         }
@@ -75,10 +87,10 @@ namespace TestMakerFreeWebApp.Controllers
         [HttpGet("ByTitle/{num:int?}")]
         public IActionResult ByTitle(int num = 10)
         {
-            var dataset = ((JsonResult) Latest(num)).Value as List<QuizViewModel>;
+            var byTitle = _context.Quizzes.OrderBy(q => q.Title).Take(num).ToArray();
 
             return new JsonResult(
-                dataset.OrderBy(q => q.Title),
+                byTitle.Adapt<QuizViewModel[]>(),
                 new JsonSerializerSettings {Formatting = Formatting.Indented}
             );
         }
@@ -86,41 +98,16 @@ namespace TestMakerFreeWebApp.Controllers
         [HttpGet("Random/{num:int?}")]
         public IActionResult Random(int num = 10)
         {
-            var sampleQuizzes = ((JsonResult)Latest(num)).Value
-                as List<QuizViewModel>;
+            var random = _context.Quizzes.OrderBy(q => Guid.NewGuid()).Take(num).ToArray();
 
             return new JsonResult(
-                sampleQuizzes.OrderBy(t => Guid.NewGuid()),
-                new JsonSerializerSettings()
+                random.Adapt<QuizViewModel[]>(),
+                new JsonSerializerSettings
                 {
                     Formatting = Formatting.Indented
                 });
         }
-
-        // GET: api/<controller>
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
-
         
-        // POST api/<controller>
-        [HttpPost]
-        public void Post([FromBody]string value)
-        {
-        }
-
-        // PUT api/<controller>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
-        {
-        }
-
-        // DELETE api/<controller>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
+        #endregion
     }
 }
