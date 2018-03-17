@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Metadata;
-
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Localization.Internal;
 using TestMakerFreeWebApp.Data.Models;
 
 namespace TestMakerFreeWebApp.Data
@@ -61,4 +64,25 @@ namespace TestMakerFreeWebApp.Data
 
         #endregion
     }
+
+    // https://codingblast.com/entityframework-core-add-implementation-idesigntimedbcontextfactory-multiple-dbcontexts/
+    public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
+    {
+        public ApplicationDbContext CreateDbContext(string[] args)
+        {
+            IConfigurationRoot configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .Build();
+
+            var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
+
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
+
+            builder.UseSqlServer(connectionString);
+
+            return new ApplicationDbContext(builder.Options);
+        }
+    }
+
 }
