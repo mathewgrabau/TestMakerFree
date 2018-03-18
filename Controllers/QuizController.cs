@@ -14,16 +14,12 @@ using TestMakerFreeWebApp.Data.Models;
 
 namespace TestMakerFreeWebApp.Controllers
 {
-    [Route("api/[controller]")]
-    public class QuizController : Controller
+    public class QuizController : BaseApiController
     {
-        private ApplicationDbContext _context;
-
         #region Constructor
 
-        public QuizController(ApplicationDbContext context)
+        public QuizController(ApplicationDbContext context) : base(context)
         {
-            _context = context;
         }
 
         #endregion
@@ -34,7 +30,7 @@ namespace TestMakerFreeWebApp.Controllers
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            var quiz = _context.Quizzes.Where(q => q.Id == id).FirstOrDefault();
+            var quiz = Context.Quizzes.Where(q => q.Id == id).FirstOrDefault();
 
             if (quiz == null)
             {
@@ -45,12 +41,12 @@ namespace TestMakerFreeWebApp.Controllers
             }
 
             return new JsonResult(quiz.Adapt<QuizViewModel>(),
-                new JsonSerializerSettings {Formatting = Formatting.Indented});
+                JsonSettings);
         }
 
         // POST api/<controller>
         [HttpPost]
-        public IActionResult Post([FromBody]QuizViewModel model)
+        public IActionResult Post([FromBody] QuizViewModel model)
         {
             // return a generic HTTP Status 500 (Server Error)
             // if the client payload is invalid.
@@ -60,7 +56,7 @@ namespace TestMakerFreeWebApp.Controllers
             }
 
             // retrieve the quiz to edit
-            var quiz = _context.Quizzes.Where(q => q.Id == model.Id).FirstOrDefault();
+            var quiz = Context.Quizzes.Where(q => q.Id == model.Id).FirstOrDefault();
 
             // handle invalid quizzes
             if (quiz == null)
@@ -80,14 +76,11 @@ namespace TestMakerFreeWebApp.Controllers
             // Set the update
             quiz.LastModifiedDate = DateTime.Now;
 
-            _context.SaveChanges();
+            Context.SaveChanges();
 
             return new JsonResult(
                 quiz.Adapt<QuizViewModel>(),
-                new JsonSerializerSettings
-                {
-                    Formatting = Formatting.Indented
-                }
+                JsonSettings
             );
         }
 
@@ -112,15 +105,15 @@ namespace TestMakerFreeWebApp.Controllers
             quiz.LastModifiedDate = quiz.CreatedDate;
 
             // Temp author
-            quiz.UserId = _context.Users.Where(u => u.UserName == "Admin").FirstOrDefault().Id;
+            quiz.UserId = Context.Users.Where(u => u.UserName == "Admin").FirstOrDefault().Id;
 
             // Add new quiz
-            _context.Quizzes.Add(quiz);
+            Context.Quizzes.Add(quiz);
 
-            _context.SaveChanges();
+            Context.SaveChanges();
 
             return new JsonResult(quiz.Adapt<QuizViewModel>(),
-                new JsonSerializerSettings {Formatting = Formatting.Indented});
+                JsonSettings);
 
         }
 
@@ -128,16 +121,16 @@ namespace TestMakerFreeWebApp.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var quiz = _context.Quizzes.Where(q => q.Id == id).FirstOrDefault();
+            var quiz = Context.Quizzes.Where(q => q.Id == id).FirstOrDefault();
 
             if (quiz == null)
             {
                 return NotFound(new {Error = $"Quiz {id} was not found"});
             }
 
-            _context.Quizzes.Remove(quiz);
+            Context.Quizzes.Remove(quiz);
 
-            _context.SaveChanges();
+            Context.SaveChanges();
 
             return new OkResult();
         }
@@ -150,14 +143,14 @@ namespace TestMakerFreeWebApp.Controllers
         [HttpGet("Latest/{num:int?}")]
         public IActionResult Latest(int num = 10)
         {
-            var latest = _context.Quizzes.OrderByDescending(q => q.CreatedDate)
+            var latest = Context.Quizzes.OrderByDescending(q => q.CreatedDate)
                 .Take(num)
                 .ToArray();
 
             // output the result in JSON format
             return new JsonResult(
                 latest.Adapt<QuizViewModel[]>(),
-                new JsonSerializerSettings {Formatting = Formatting.Indented}
+                JsonSettings
             );
         }
 
@@ -169,27 +162,24 @@ namespace TestMakerFreeWebApp.Controllers
         [HttpGet("ByTitle/{num:int?}")]
         public IActionResult ByTitle(int num = 10)
         {
-            var byTitle = _context.Quizzes.OrderBy(q => q.Title).Take(num).ToArray();
+            var byTitle = Context.Quizzes.OrderBy(q => q.Title).Take(num).ToArray();
 
             return new JsonResult(
                 byTitle.Adapt<QuizViewModel[]>(),
-                new JsonSerializerSettings {Formatting = Formatting.Indented}
+                JsonSettings
             );
         }
 
         [HttpGet("Random/{num:int?}")]
         public IActionResult Random(int num = 10)
         {
-            var random = _context.Quizzes.OrderBy(q => Guid.NewGuid()).Take(num).ToArray();
+            var random = Context.Quizzes.OrderBy(q => Guid.NewGuid()).Take(num).ToArray();
 
             return new JsonResult(
                 random.Adapt<QuizViewModel[]>(),
-                new JsonSerializerSettings
-                {
-                    Formatting = Formatting.Indented
-                });
+                JsonSettings);
         }
-        
+
         #endregion
     }
 }

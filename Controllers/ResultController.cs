@@ -13,21 +13,17 @@ using TestMakerFreeWebApp.ViewModels;
 
 namespace TestMakerFreeWebApp.Controllers
 {
-    [Route("api/[controller]")]
-    public class ResultController : Controller
+    public class ResultController : BaseApiController
     {
-        private ApplicationDbContext _context;
-
-        public ResultController(ApplicationDbContext context)
+        public ResultController(ApplicationDbContext context) : base(context)
         {
-            _context = context;
         }
 
         #region REST
 
         public IActionResult Get(int id)
         {
-            var result = _context.Results.Where(r => r.Id == id).FirstOrDefault();
+            var result = Context.Results.Where(r => r.Id == id).FirstOrDefault();
 
             if (result == null)
             {
@@ -36,7 +32,7 @@ namespace TestMakerFreeWebApp.Controllers
 
             return new JsonResult(
                 result.Adapt<ResultViewModel>(),
-                new JsonSerializerSettings { Formatting = Formatting.Indented });
+                JsonSettings);
         }
 
         [HttpPut]
@@ -51,12 +47,12 @@ namespace TestMakerFreeWebApp.Controllers
 
             result.CreatedDate = result.LastModifiedDate = DateTime.Now;
 
-            _context.Results.Add(result);
-            _context.SaveChanges();
+            Context.Results.Add(result);
+            Context.SaveChanges();
 
             return new JsonResult(
                 result.Adapt<ResultViewModel>(),
-                new JsonSerializerSettings { Formatting = Formatting.Indented });
+                JsonSettings);
         }
 
         [HttpPost]
@@ -67,7 +63,7 @@ namespace TestMakerFreeWebApp.Controllers
                 return new StatusCodeResult(500);
             }
 
-            var result = _context.Results.Where(r => r.Id == model.Id).FirstOrDefault();
+            var result = Context.Results.Where(r => r.Id == model.Id).FirstOrDefault();
 
             if (result == null)
             {
@@ -82,25 +78,24 @@ namespace TestMakerFreeWebApp.Controllers
 
             result.LastModifiedDate = DateTime.Now;
 
-            _context.SaveChanges();
+            Context.SaveChanges();
 
             return new JsonResult(
-                result.Adapt<AnswerViewModel>(),
-                new JsonSerializerSettings { Formatting = Formatting.Indented });
+                result.Adapt<AnswerViewModel>(), JsonSettings);
         }
 
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var result = _context.Results.Where(r => r.Id == id).FirstOrDefault();
+            var result = Context.Results.Where(r => r.Id == id).FirstOrDefault();
 
             if (result == null)
             {
                 return NotFound(new {Error = $"Result {id} not found"});
             }
 
-            _context.Results.Remove(result);
-            _context.SaveChanges();
+            Context.Results.Remove(result);
+            Context.SaveChanges();
 
             return new OkResult();
         }
@@ -112,11 +107,11 @@ namespace TestMakerFreeWebApp.Controllers
         [HttpGet("All/{quizId}")]
         public IActionResult All(int quizId)
         {
-            var results = _context.Results.Where(r => r.QuizId == quizId).ToArray();
+            var results = Context.Results.Where(r => r.QuizId == quizId).ToArray();
 
             return new JsonResult(
                 results.Adapt<ResultViewModel[]>(),
-                new JsonSerializerSettings {Formatting = Formatting.Indented}
+                JsonSettings
             );
         }
     }
