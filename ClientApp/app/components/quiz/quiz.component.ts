@@ -32,4 +32,8 @@ export class QuizComponent {
             this.router.navigate(["home"]);
         }
     } 
+
+    onEdit() {
+        this.router.navigate(["quiz/edit", this.quiz.Id]);
+    }
 }

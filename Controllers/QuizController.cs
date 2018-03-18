@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using TestMakerFreeWebApp.Data;
 using TestMakerFreeWebApp.ViewModels;
 using Mapster;
+using TestMakerFreeWebApp.Data.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -35,29 +36,110 @@ namespace TestMakerFreeWebApp.Controllers
         {
             var quiz = _context.Quizzes.Where(q => q.Id == id).FirstOrDefault();
 
+            if (quiz == null)
+            {
+                return NotFound(new
+                {
+                    Error = $"Quiz ID {id} was not found"
+                });
+            }
+
             return new JsonResult(quiz.Adapt<QuizViewModel>(),
                 new JsonSerializerSettings {Formatting = Formatting.Indented});
         }
 
         // POST api/<controller>
         [HttpPost]
-        public void Post([FromBody]string value)
+        public IActionResult Post([FromBody]QuizViewModel model)
         {
-            throw new NotImplementedException();
+            // return a generic HTTP Status 500 (Server Error)
+            // if the client payload is invalid.
+            if (model == null)
+            {
+                return new StatusCodeResult(500);
+            }
+
+            // retrieve the quiz to edit
+            var quiz = _context.Quizzes.Where(q => q.Id == model.Id).FirstOrDefault();
+
+            // handle invalid quizzes
+            if (quiz == null)
+            {
+                return NotFound(new
+                {
+                    Error = $"Quiz {model.Id} was not found"
+                });
+            }
+
+            // Update all the fields
+            quiz.Title = model.Title;
+            quiz.Description = model.Description;
+            quiz.Text = model.Text;
+            quiz.Notes = model.Notes;
+
+            // Set the update
+            quiz.LastModifiedDate = DateTime.Now;
+
+            _context.SaveChanges();
+
+            return new JsonResult(
+                quiz.Adapt<QuizViewModel>(),
+                new JsonSerializerSettings
+                {
+                    Formatting = Formatting.Indented
+                }
+            );
         }
 
         // PUT api/<controller>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        [HttpPut]
+        public IActionResult Put([FromBody] QuizViewModel model)
         {
-            throw new NotImplementedException();
+            if (model == null)
+            {
+                return new StatusCodeResult(500);
+            }
+
+            // handle the insert 
+            var quiz = new Quiz();
+
+            quiz.Title = model.Title;
+            quiz.Description = model.Description;
+            quiz.Text = model.Text;
+            quiz.Notes = model.Notes;
+
+            quiz.CreatedDate = DateTime.Now;
+            quiz.LastModifiedDate = quiz.CreatedDate;
+
+            // Temp author
+            quiz.UserId = _context.Users.Where(u => u.UserName == "Admin").FirstOrDefault().Id;
+
+            // Add new quiz
+            _context.Quizzes.Add(quiz);
+
+            _context.SaveChanges();
+
+            return new JsonResult(quiz.Adapt<QuizViewModel>(),
+                new JsonSerializerSettings {Formatting = Formatting.Indented});
+
         }
 
         // DELETE api/<controller>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
-            throw new NotImplementedException();
+            var quiz = _context.Quizzes.Where(q => q.Id == id).FirstOrDefault();
+
+            if (quiz == null)
+            {
+                return NotFound(new {Error = $"Quiz {id} was not found"});
+            }
+
+            _context.Quizzes.Remove(quiz);
+
+            _context.SaveChanges();
+
+            return new OkResult();
         }
 
         #endregion
