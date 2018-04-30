@@ -8,7 +8,7 @@ using TestMakerFreeWebApp.Data;
 
 namespace TestMakerFreeWebApp.Controllers
 {
-    [Route("api/{controller}")]
+    [Route("api/[controller]")]
     public class BaseApiController : Controller
     {
         protected ApplicationDbContext Context;

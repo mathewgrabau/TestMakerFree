@@ -52,6 +52,8 @@ namespace TestMakerFreeWebApp.Controllers
             question.Text = model.Text;
             question.Notes = model.Notes;
             question.CreatedDate = question.LastModifiedDate = DateTime.Now;
+            
+            Context.Questions.Add(question);
 
             Context.SaveChanges();
 

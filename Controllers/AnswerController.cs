@@ -15,7 +15,6 @@ namespace TestMakerFreeWebApp.Controllers
 {
     public class AnswerController : BaseApiController
     {
-
         public AnswerController(ApplicationDbContext context) : base(context)
         {
         }

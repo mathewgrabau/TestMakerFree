@@ -40,7 +40,7 @@ export class QuizComponent {
     onDelete() {
         if (confirm("Do you really want to delete this quiz?")) {
             var url = this.baseUrl + "api/quiz/" + this.quiz.Id;
-            this.http.delete(url).subscribe(res => {
+            this.http.delete(url, { responseType: 'text' }).subscribe(res => {
                 console.log("Quiz " + this.quiz.Id + " has been deleted.");
                     this.router.navigate(["home"]);
                 },
